@@ -1,0 +1,33 @@
+### Create Food
+
+POST http://localhost:3000/foods
+Content-Type: application/json
+
+{
+    "name": "Torta de Frango",
+    "price": 12.5,
+    "category_id": 3
+}
+
+### Read Foods
+
+GET http://localhost:3000/foods
+
+### Update Food
+
+PUT http://localhost:3000/foods/3
+Content-Type: application/json
+
+{
+    "name": "Torta de Frango",
+    "price": 14,
+    "category_id": 3
+}
+
+### Delete Food
+
+DELETE http://localhost:3000/foods/4
+
+### Read Categories
+
+GET http://localhost:3000/categories

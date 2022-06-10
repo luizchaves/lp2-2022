@@ -1,0 +1,28 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "name": "Salada"
+    },
+    {
+      "id": 2,
+      "name": "Suco"
+    },
+    {
+      "id": 3,
+      "name": "Salgado"
+    }
+  ],
+  "foods": [
+    {
+      "name": "Salada de Frutas",
+      "price": 12.5,
+      "category_id": 1
+    },
+    {
+      "name": "Suco de Laranja",
+      "price": 7,
+      "category_id": 2
+    }
+  ]
+}
