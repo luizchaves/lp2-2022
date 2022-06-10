@@ -10,7 +10,7 @@ async function up() {
     )
   `;
 
-  db.run(categoriesSql);
+  await db.run(categoriesSql);
 
   const foodsSql = `
     CREATE TABLE foods (
@@ -22,7 +22,19 @@ async function up() {
     )
   `;
 
-  db.run(foodsSql);
+  await db.run(foodsSql);
+
+
+  const usersSql = `
+    CREATE TABLE users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name VARCHAR(50) NOT NULL,
+      email VARCHAR(50) NOT NULL UNIQUE,
+      password VARCHAR(20) NOT NULL
+    )
+  `;
+
+  db.run(usersSql);
 }
 
 export default { up };

@@ -1,7 +1,10 @@
+import 'express-async-errors';
 import express from 'express';
 import morgan from 'morgan';
+
 import router from './routes.js';
-import 'express-async-errors';
+
+const port = process.env.PORT || '3000';
 
 const app = express();
 
@@ -13,4 +16,4 @@ app.use(express.static('public'));
 
 app.use(router);
 
-app.listen(3000, () => console.log('Server is running!'));
+app.listen(port, () => console.log('Server is running!'));

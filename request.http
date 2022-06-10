@@ -31,3 +31,14 @@ DELETE http://localhost:3000/foods/4
 ### Read Categories
 
 GET http://localhost:3000/categories
+
+### Create User
+
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+    "name": "Luiz",
+    "email": "luiz@email.com",
+    "password": "123"
+}
