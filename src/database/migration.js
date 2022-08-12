@@ -1,4 +1,4 @@
-import Database from './database.js'
+import Database from './database.js';
 
 async function up() {
   const db = await Database.connect();
@@ -23,7 +23,6 @@ async function up() {
   `;
 
   await db.run(foodsSql);
-
 
   const usersSql = `
     CREATE TABLE users (

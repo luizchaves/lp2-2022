@@ -3,7 +3,7 @@ import Database from '../database/database.js';
 async function create(category) {
   const db = await Database.connect();
 
-  const {id, name} = category;
+  const { id, name } = category;
 
   const sql = `
     INSERT INTO
@@ -12,7 +12,7 @@ async function create(category) {
       (?, ?)
   `;
 
-  const {lastID} = await db.run(sql, [id, name]);
+  const { lastID } = await db.run(sql, [id, name]);
 
   return read(lastID);
 }
@@ -49,4 +49,4 @@ async function read(id) {
   return category;
 }
 
-export default {create, readAll, read};
+export default { create, readAll, read };

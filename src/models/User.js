@@ -7,7 +7,7 @@ const salt = Number(process.env.SALT);
 async function create(user) {
   const db = await Database.connect();
 
-  const {name, email, password} = user;
+  const { name, email, password } = user;
 
   const hash = bcrypt.hashSync(password, salt);
 
@@ -18,7 +18,7 @@ async function create(user) {
       (?, ?, ?)
   `;
 
-  const {lastID} = await db.run(sql, [name, email, hash]);
+  const { lastID } = await db.run(sql, [name, email, hash]);
 
   return read(lastID);
 }

@@ -1,10 +1,10 @@
 import { resolve } from 'path';
-import { readFileSync} from 'fs';
+import { readFileSync } from 'fs';
 import Food from '../models/Food.js';
 import Category from '../models/Category.js';
 
 async function up() {
-  const file = resolve(process.cwd(), "src", "database", "seeders.json");
+  const file = resolve(process.cwd(), 'src', 'database', 'seeders.json');
 
   const content = JSON.parse(readFileSync(file));
 

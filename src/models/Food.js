@@ -39,7 +39,7 @@ async function read(id) {
 async function create(food) {
   const db = await Database.connect();
 
-  const {name, price, category_id} = food;
+  const { name, price, category_id } = food;
 
   const sql = `
     INSERT INTO
@@ -48,7 +48,7 @@ async function create(food) {
       (?, ?, ?)
   `;
 
-  const {lastID} = await db.run(sql, [name, price, category_id]);
+  const { lastID } = await db.run(sql, [name, price, category_id]);
 
   return read(lastID);
 }
@@ -56,7 +56,7 @@ async function create(food) {
 async function update(food, id) {
   const db = await Database.connect();
 
-  const {name, price, category_id} = food;
+  const { name, price, category_id } = food;
 
   const sql = `
     UPDATE 
@@ -67,7 +67,7 @@ async function update(food, id) {
       id = ?
   `;
 
-  const {changes} = await db.run(sql, [name, price, category_id, id]);
+  const { changes } = await db.run(sql, [name, price, category_id, id]);
 
   if (changes === 1) {
     return read(id);
@@ -86,8 +86,8 @@ async function destroy(id) {
       id = ?
   `;
 
-  const {changes} = await db.run(sql, [id]);
-  
+  const { changes } = await db.run(sql, [id]);
+
   return changes === 1;
 }
 

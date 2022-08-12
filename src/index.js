@@ -1,5 +1,5 @@
 import 'express-async-errors';
-import 'dotenv/config'
+import 'dotenv/config';
 import express from 'express';
 import morgan from 'morgan';
 
