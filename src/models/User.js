@@ -2,12 +2,12 @@ import bcrypt from 'bcryptjs';
 
 import Database from '../database/database.js';
 
-const salt = 10;
+const salt = Number(process.env.SALT);
 
 async function create(user) {
   const db = await Database.connect();
 
-  const {name, email, password} = user;
+  const { name, email, password } = user;
 
   const hash = bcrypt.hashSync(password, salt);
 
@@ -18,7 +18,7 @@ async function create(user) {
       (?, ?, ?)
   `;
 
-  const {lastID} = await db.run(sql, [name, email, hash]);
+  const { lastID } = await db.run(sql, [name, email, hash]);
 
   return read(lastID);
 }
@@ -27,9 +27,9 @@ async function read(id) {
   const db = await Database.connect();
 
   const sql = `
-    SELECT 
+    SELECT
       *
-    FROM 
+    FROM
       users
     WHERE
       id = ?
@@ -40,4 +40,19 @@ async function read(id) {
   return user;
 }
 
-export default { create, read };
+async function readByEmail(email) {
+  const db = await Database.connect();
+
+  const sql = `
+    SELECT
+      *
+    FROM
+      users
+    WHERE
+      email = ?
+  `;
+
+  return await db.get(sql, [email]);
+}
+
+export default { create, read, readByEmail };

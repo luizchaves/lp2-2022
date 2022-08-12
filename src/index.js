@@ -1,10 +1,11 @@
 import 'express-async-errors';
+import 'dotenv/config';
 import express from 'express';
 import morgan from 'morgan';
 
 import router from './routes.js';
 
-const port = process.env.PORT || '3000';
+const port = process.env.PORT || 3000;
 
 const app = express();
 

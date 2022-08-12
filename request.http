@@ -1,7 +1,11 @@
+@token = {{login.response.body.token}}
+@host = http://localhost:3000
+
 ### Create Food
 
-POST http://localhost:3000/foods
+POST {{host}}/foods
 Content-Type: application/json
+Authorization: bearer {{token}}
 
 {
     "name": "Torta de Frango",
@@ -11,12 +15,14 @@ Content-Type: application/json
 
 ### Read Foods
 
-GET http://localhost:3000/foods
+GET {{host}}/foods
+Authorization: bearer {{token}}
 
 ### Update Food
 
-PUT http://localhost:3000/foods/3
+PUT {{host}}/foods/3
 Content-Type: application/json
+Authorization: bearer {{token}}
 
 {
     "name": "Torta de Frango",
@@ -26,19 +32,42 @@ Content-Type: application/json
 
 ### Delete Food
 
-DELETE http://localhost:3000/foods/4
+DELETE {{host}}/foods/4
+Authorization: bearer {{token}}
 
 ### Read Categories
 
-GET http://localhost:3000/categories
+GET {{host}}/categories
+Authorization: bearer {{token}}
 
 ### Create User
 
-POST http://localhost:3000/users
+POST {{host}}/users
 Content-Type: application/json
 
 {
-    "name": "Luiz",
-    "email": "luiz@email.com",
+    "name": "Teste",
+    "email": "teste@email.com",
     "password": "123"
+}
+
+### Signin invalid
+
+POST {{host}}/signin
+Content-Type: application/json
+
+{
+  "email": "test@email.com",
+  "password": "test"
+}
+
+### Signin valid
+
+# @name login
+POST {{host}}/signin
+Content-Type: application/json
+
+{
+  "email": "teste@email.com",
+  "password": "123"
 }
