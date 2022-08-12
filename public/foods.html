@@ -25,7 +25,7 @@
             <a class="nav-link active" aria-current="page" href="/foods.html">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/signout">Sair</a>
+            <a class="nav-link" href="#" onclick="signout()">Sair</a>
           </li>
         </ul>
       </div>
@@ -67,9 +67,19 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
     crossorigin="anonymous"></script>
-  <script>
+  <script type="module">
+    import Auth from './js/auth.js';
+
+    window.destroyFood = destroyFood;
+    window.signout = Auth.signout;
+
     const form = document.querySelector('form');
     const main = document.querySelector('main');
+
+    if (Auth.isAuthenticated()) {
+      loadFoods();
+      loadCategories();
+    }
 
     form.onsubmit = (event) => {
       event.preventDefault();
@@ -111,7 +121,14 @@
 
       const url = '/foods';
 
-      const foods = await (await fetch(url)).json();
+      const config = {
+        method: 'get',
+        headers: {
+          Authorization: `Bearer ${Auth.getToken()}`,
+        },
+      };
+
+      const foods = await (await fetch(url, config)).json();
 
       for (const food of foods) {
         createFoodView(food);
@@ -123,7 +140,14 @@
 
       const url = '/categories';
 
-      const categories = await (await fetch(url)).json();
+      const config = {
+        method: 'get',
+        headers: {
+          Authorization: `Bearer ${Auth.getToken()}`,
+        },
+      };
+
+      const categories = await (await fetch(url, config)).json();
 
       for (const category of categories) {
         const option = `<option value="${category.id}">${category.name}</option>`;
@@ -140,6 +164,7 @@
         body: JSON.stringify(food),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
+          Authorization: `Bearer ${Auth.getToken()}`,
         },
       };
 
@@ -153,15 +178,15 @@
 
       const config = {
         method: 'delete',
+        headers: {
+          Authorization: `Bearer ${Auth.getToken()}`,
+        },
       };
 
       fetch(url, config);
 
       document.querySelector(`#food-${id}`).remove();
     }
-
-    loadFoods();
-    loadCategories();
   </script>
 </body>
 </html>
