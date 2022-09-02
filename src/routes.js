@@ -7,6 +7,7 @@ import Food from './models/Food.js';
 import User from './models/User.js';
 
 import { isAuthenticated } from './middleware/auth.js';
+import SendMail from './services/sendMail.js';
 
 const router = Router();
 
@@ -81,6 +82,8 @@ router.post('/users', async (req, res) => {
     const user = req.body;
 
     const newUser = await User.create(user);
+
+    await SendMail.createNewUser(user.email);
 
     res.json(newUser);
   } catch (error) {
