@@ -1,7 +1,7 @@
 @token = {{login.response.body.token}}
 @host = http://localhost:3000
 
-### Create Food
+### Create Food whithout image
 
 POST {{host}}/foods
 Content-Type: application/json
@@ -45,19 +45,32 @@ Authorization: bearer {{token}}
 
 ### Update Food
 
-PUT {{host}}/foods/3
-Content-Type: application/json
+PUT {{host}}/foods/4
 Authorization: bearer {{token}}
+Content-Type: multipart/form-data; boundary="boundary"
 
-{
-    "name": "Torta de Frango",
-    "price": 14,
-    "category_id": 3
-}
+--boundary
+Content-Disposition: form-data; name="name"
+
+Milkshake
+--boundary
+Content-Disposition: form-data; name="price"
+
+8
+--boundary
+Content-Disposition: form-data; name="category_id"
+
+2
+--boundary
+Content-Disposition: form-data; name="image"; filename="milkshake.jpg"
+Content-Type: image/jpeg
+
+< ./public/imgs/foods/milkshake.jpg
+--boundary--
 
 ### Delete Food
 
-DELETE {{host}}/foods/4
+DELETE {{host}}/foods/3
 Authorization: bearer {{token}}
 
 ### Read Categories
@@ -73,7 +86,7 @@ Content-Type: application/json
 {
     "name": "Luiz",
     "email": "luiz@email.com",
-    "password": "123"
+    "password": "12345678"
 }
 
 ### Valid Login
@@ -84,7 +97,7 @@ Content-Type: application/json
 
 {
     "email": "luiz@email.com",
-    "password": "123"
+    "password": "12345678"
 }
 
 ### Invalid Login

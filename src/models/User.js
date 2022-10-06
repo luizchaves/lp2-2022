@@ -20,16 +20,20 @@ async function create(user) {
 
   const { lastID } = await db.run(sql, [name, email, hash]);
 
-  return read(lastID);
+  const newUser = await read(lastID);
+
+  delete newUser.password;
+
+  return newUser;
 }
 
 async function read(id) {
   const db = await Database.connect();
 
   const sql = `
-    SELECT 
+    SELECT
       *
-    FROM 
+    FROM
       users
     WHERE
       id = ?
@@ -44,9 +48,9 @@ async function readByEmail(email) {
   const db = await Database.connect();
 
   const sql = `
-    SELECT 
+    SELECT
       *
-    FROM 
+    FROM
       users
     WHERE
       email = ?

@@ -18,8 +18,7 @@ async function up() {
       name VARCHAR(20) NOT NULL,
       image VARCHAR(50) NOT NULL,
       price DOUBLE NOT NULL,
-      category_id INTEGER NOT NULL,
-      FOREIGN KEY (category_id) REFERENCES categories (id)
+      category_id INTEGER NOT NULL REFERENCES categories (id)
     )
   `;
 
@@ -30,7 +29,7 @@ async function up() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name VARCHAR(50) NOT NULL,
       email VARCHAR(50) NOT NULL UNIQUE,
-      password VARCHAR(20) NOT NULL
+      password VARCHAR(20) NOT NULL CHECK(LENGTH(password) >= 8)
     )
   `;
 

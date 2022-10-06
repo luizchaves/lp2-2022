@@ -90,7 +90,7 @@
             <div class="modal-body">
               <div class="mb-3">
                 <label for="name" class="form-label">Nome</label>
-                <input type="text" class="form-control" id="name" name="name" />
+                <input type="text" class="form-control" id="name" name="name" required />
               </div>
               <div class="mb-3">
                 <label for="price" class="form-label">Preço</label>
@@ -99,6 +99,8 @@
                   class="form-control"
                   id="price"
                   name="price"
+                  required
+                  step="0.01"
                 />
               </div>
               <div class="mb-3">
@@ -107,6 +109,7 @@
                   class="form-control"
                   id="category"
                   name="category_id"
+                  required
                 ></select>
               </div>
               <div class="mb-3">
@@ -116,6 +119,7 @@
                   id="food-image-file"
                   class="form-control"
                   name="image"
+                  required
                 />
               </div>
             </div>

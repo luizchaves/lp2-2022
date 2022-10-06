@@ -2,6 +2,7 @@ import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import multer from 'multer';
+import { celebrate, Joi, errors, Segments } from 'celebrate';
 
 import uploadConfig from './config/multer.js';
 import Category from './models/Category.js';
@@ -10,6 +11,13 @@ import User from './models/User.js';
 
 import { isAuthenticated } from './middleware/auth.js';
 import SendMail from './services/SendMail.js';
+
+class AppError extends Error {
+  constructor(message, statusCode = 400) {
+    super(message);
+    this.statusCode = statusCode;
+  }
+}
 
 const router = Router();
 
@@ -21,7 +29,7 @@ router.get('/foods', isAuthenticated, async (req, res) => {
 
     res.json(foods);
   } catch (error) {
-    throw new Error('Error in list foods');
+    throw new AppError('Error in list foods');
   }
 });
 
@@ -29,9 +37,18 @@ router.post(
   '/foods',
   isAuthenticated,
   multer(uploadConfig).single('image'),
+  celebrate({
+    [Segments.BODY]: Joi.object().keys({
+      name: Joi.string().required(),
+      price: Joi.number().precision(2),
+      category_id: Joi.number().integer(),
+    }),
+  }),
   async (req, res) => {
     try {
       const food = req.body;
+
+      console.log('body', req.body);
 
       const image = req.file
         ? `/imgs/foods/${req.file.filename}`
@@ -41,7 +58,7 @@ router.post(
 
       res.json(newFood);
     } catch (error) {
-      throw new Error('Error in create food');
+      throw new AppError('Error in create food');
     }
   }
 );
@@ -50,6 +67,13 @@ router.put(
   '/foods/:id',
   isAuthenticated,
   multer(uploadConfig).single('image'),
+  celebrate({
+    [Segments.BODY]: Joi.object().keys({
+      name: Joi.string().required(),
+      price: Joi.number().precision(2),
+      category_id: Joi.number().integer(),
+    }),
+  }),
   async (req, res) => {
     try {
       const id = Number(req.params.id);
@@ -65,10 +89,14 @@ router.put(
       if (newFood) {
         res.json(newFood);
       } else {
-        res.status(400).json({ error: 'Food not found.' });
+        throw new AppError('Food not found.');
       }
     } catch (error) {
-      throw new Error('Error in update food');
+      if (error instanceof AppError) {
+        throw error;
+      }
+
+      throw new AppError('Error in update food');
     }
   }
 );
@@ -80,10 +108,14 @@ router.delete('/foods/:id', isAuthenticated, async (req, res) => {
     if (await Food.destroy(id)) {
       res.status(204).send();
     } else {
-      res.status(400).json({ error: 'Food not found.' });
+      throw new AppError('Food not found.');
     }
   } catch (error) {
-    throw new Error('Error in delete food');
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError('Error in delete food');
   }
 });
 
@@ -93,23 +125,41 @@ router.get('/categories', isAuthenticated, async (req, res) => {
 
     res.json(categories);
   } catch (error) {
-    throw new Error('Error in list categories');
+    throw new AppError('Error in list categories');
   }
 });
 
-router.post('/users', async (req, res) => {
-  try {
-    const user = req.body;
+router.post(
+  '/users',
+  celebrate({
+    [Segments.BODY]: Joi.object().keys({
+      name: Joi.string().required(),
+      email: Joi.string().email(),
+      password: Joi.string().min(8),
+    }),
+  }),
+  async (req, res) => {
+    try {
+      const user = req.body;
 
-    const newUser = await User.create(user);
+      const newUser = await User.create(user);
 
-    await SendMail.createNewUser(user.email);
+      await SendMail.createNewUser(user.email);
 
-    res.json(newUser);
-  } catch (error) {
-    throw new Error('Error in create user');
+      res.json(newUser);
+    } catch (error) {
+      if (
+        error.message.includes(
+          'SQLITE_CONSTRAINT: UNIQUE constraint failed: users.email'
+        )
+      ) {
+        throw new AppError('Email already exists');
+      } else {
+        throw new AppError('Error in create user');
+      }
+    }
   }
-});
+);
 
 router.post('/signin', async (req, res) => {
   try {
@@ -118,7 +168,7 @@ router.post('/signin', async (req, res) => {
     const user = await User.readByEmail(email);
 
     if (!user) {
-      throw new Error('User not found');
+      throw new Error();
     }
 
     const { id: userId, password: hash } = user;
@@ -134,10 +184,10 @@ router.post('/signin', async (req, res) => {
 
       res.json({ auth: true, token });
     } else {
-      throw new Error('User not found');
+      throw new Error();
     }
   } catch (error) {
-    res.status(401).json({ error: 'User not found' });
+    throw new AppError('User not found', 401);
   }
 });
 
@@ -147,12 +197,16 @@ router.use(function (req, res, next) {
   });
 });
 
+router.use(errors());
+
 router.use(function (error, req, res, next) {
   console.error(error.stack);
 
-  res.status(500).json({
-    message: 'Something broke!',
-  });
+  if (error instanceof AppError) {
+    res.status(error.statusCode).json({ error: error.message });
+  } else {
+    res.status(500).json({ message: 'Something broke!' });
+  }
 });
 
 export default router;

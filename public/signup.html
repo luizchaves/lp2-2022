@@ -47,14 +47,28 @@
     <div class="container">
       <h1 class="text-center my-5">Cadastro</h1>
       <div class="row justify-content-center">
-        <form class="col-6">
+        <form class="col-6 needs-validation" novalidate>
           <div class="mb-3">
             <label for="name" class="form-label">Nome</label>
-            <input type="text" class="form-control" id="name" name="name" />
+            <input
+              type="text"
+              class="form-control"
+              id="name"
+              name="name"
+              required
+            />
+            <div class="invalid-feedback"></div>
           </div>
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" />
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              name="email"
+              required
+            />
+            <div class="invalid-feedback"></div>
           </div>
           <div class="mb-3">
             <label for="password" class="form-label">Senha</label>
@@ -63,7 +77,10 @@
               class="form-control"
               id="password"
               name="password"
+              minlength="8"
+              required
             />
+            <div class="invalid-feedback"></div>
           </div>
           <div class="mb-3">
             <label for="confirmation_password" class="form-label"
@@ -74,10 +91,15 @@
               class="form-control"
               id="confirmation_password"
               name="confirmation_password"
+              required
             />
+            <div class="invalid-feedback"></div>
           </div>
-          <div>
+          <div class="d-flex align-items-center">
             <button type="submit" class="btn btn-primary">Cadastrar</button>
+            <div class="spinner-border ms-3 d-none" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
           </div>
         </form>
       </div>
@@ -91,15 +113,70 @@
     <script>
       const form = document.querySelector('form');
 
-      form.onsubmit = (event) => {
+      const emptyErrors = {
+        name: 'Escolha o nome do usuário.',
+        email: 'Escolha o email do usuário.',
+        password: 'Escolha a senha do usuário com no mínimo 8 caracteres.',
+        confirmation_password: 'Escolha a confirmação de senha do usuário com no mínimo 8 caracteres.',
+      };
+
+      form.onsubmit = async (event) => {
         event.preventDefault();
+
+        document.querySelector('.spinner-border').classList.remove('d-none');
 
         const user = Object.fromEntries(new FormData(form));
 
-        createUser(user);
+        const valid = () => {
+          const inputs = document.querySelectorAll('input');
 
-        location.href = '/signin.html';
+          const valid = Array.from(inputs).every((input) =>
+            input.checkValidity()
+          );
+          return valid;
+        };
+
+        if (valid() && (await createUser(user))) {
+          location.href = '/signin.html';
+        }
+
+        form.classList.add('was-validated');
       };
+
+      Array.from(document.querySelectorAll('input + .invalid-feedback')).forEach(
+        (element, index) => {
+          element.textContent = Object.values(emptyErrors)[index];
+        }
+      );
+
+      Array.from(document.querySelectorAll('input')).map((input) => {
+        input.addEventListener('input', () => {
+          input.setCustomValidity('');
+
+          if (input.value === '') {
+            const error = emptyErrors[input.name]
+            input.parentNode.querySelector('.invalid-feedback').innerText =
+              error;
+
+            input.setCustomValidity(error);
+          }
+        });
+      });
+
+      form.confirmation_password.addEventListener('input', () => {
+        const password = form.password.value;
+        const confirmation_password = form.confirmation_password.value;
+
+        if (password !== confirmation_password) {
+          const error = 'As senhas não são iguais.';
+
+          const confirmationPasswordError = document.querySelector('#confirmation_password + .invalid-feedback');
+
+          confirmationPasswordError.textContent = error;
+
+          form.confirmation_password.setCustomValidity(error);
+        }
+      });
 
       async function createUser(user) {
         const url = '/users';
@@ -112,9 +189,27 @@
           },
         };
 
-        const newUser = await (await fetch(url, config)).json();
+        const response = await fetch(url, config);
 
-        return newUser;
+        if (response.ok) {
+          const newUser = await response.json();
+
+          return newUser;
+        } else {
+          const error = await response.json();
+
+          if (error.message === 'Email already exists') {
+            const error = 'Email já cadastrado.';
+
+            const emailError = document.querySelector('#email + .invalid-feedback');
+
+            emailError.textContent = error;
+
+            form.email.setCustomValidity(error);
+          }
+
+          return false;
+        }
       }
     </script>
   </body>
