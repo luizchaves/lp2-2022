@@ -4,9 +4,9 @@ async function readAll() {
   const db = await Database.connect();
 
   const sql = `
-    SELECT 
-      f.id, f.name, f.price, c.name as category
-    FROM 
+    SELECT
+      f.id, f.name, f.image, f.price, c.name as category
+    FROM
       foods as f INNER JOIN categories as c
     ON
       f.category_id = c.id
@@ -21,9 +21,9 @@ async function read(id) {
   const db = await Database.connect();
 
   const sql = `
-    SELECT 
-      f.id, f.name, f.price, c.name as category
-    FROM 
+    SELECT
+      f.id, f.name, f.image, f.price, c.name as category
+    FROM
       foods as f INNER JOIN categories as c
     ON
       f.category_id = c.id
@@ -39,16 +39,16 @@ async function read(id) {
 async function create(food) {
   const db = await Database.connect();
 
-  const { name, price, category_id } = food;
+  const { name, image, price, category_id } = food;
 
   const sql = `
     INSERT INTO
-      foods (name, price, category_id)
+      foods (name, image, price, category_id)
     VALUES
-      (?, ?, ?)
+      (?, ?, ?, ?)
   `;
 
-  const { lastID } = await db.run(sql, [name, price, category_id]);
+  const { lastID } = await db.run(sql, [name, image, price, category_id]);
 
   return read(lastID);
 }
@@ -56,18 +56,18 @@ async function create(food) {
 async function update(food, id) {
   const db = await Database.connect();
 
-  const { name, price, category_id } = food;
+  const { name, image, price, category_id } = food;
 
   const sql = `
-    UPDATE 
+    UPDATE
       foods
     SET
-      name = ?, price = ?, category_id = ?
+      name = ?, image = ?, price = ?, category_id = ?
     WHERE
       id = ?
   `;
 
-  const { changes } = await db.run(sql, [name, price, category_id, id]);
+  const { changes } = await db.run(sql, [name, image, price, category_id, id]);
 
   if (changes === 1) {
     return read(id);

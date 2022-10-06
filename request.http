@@ -8,10 +8,35 @@ Content-Type: application/json
 Authorization: bearer {{token}}
 
 {
-    "name": "Torta de Frango",
+    "name": "Milkshake",
     "price": 12.5,
-    "category_id": 3
+    "category_id": 2
 }
+
+### Create Food with image
+
+POST {{host}}/foods
+Authorization: bearer {{token}}
+Content-Type: multipart/form-data; boundary="boundary"
+
+--boundary
+Content-Disposition: form-data; name="name"
+
+Milkshake
+--boundary
+Content-Disposition: form-data; name="price"
+
+12.5
+--boundary
+Content-Disposition: form-data; name="category_id"
+
+2
+--boundary
+Content-Disposition: form-data; name="image"; filename="milkshake.jpg"
+Content-Type: image/jpeg
+
+< ./public/imgs/foods/milkshake.jpg
+--boundary--
 
 ### Read Foods
 
@@ -46,8 +71,8 @@ POST {{host}}/users
 Content-Type: application/json
 
 {
-    "name": "Luiz Carlos",
-    "email": "luiz.carlos@email.com",
+    "name": "Luiz",
+    "email": "luiz@email.com",
     "password": "123"
 }
 

@@ -1,7 +1,9 @@
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import multer from 'multer';
 
+import uploadConfig from './config/multer.js';
 import Category from './models/Category.js';
 import Food from './models/Food.js';
 import User from './models/User.js';
@@ -23,35 +25,53 @@ router.get('/foods', isAuthenticated, async (req, res) => {
   }
 });
 
-router.post('/foods', isAuthenticated, async (req, res) => {
-  try {
-    const food = req.body;
+router.post(
+  '/foods',
+  isAuthenticated,
+  multer(uploadConfig).single('image'),
+  async (req, res) => {
+    try {
+      const food = req.body;
 
-    const newFood = await Food.create(food);
+      const image = req.file
+        ? `/imgs/foods/${req.file.filename}`
+        : '/imgs/foods/placeholder.jpg';
 
-    res.json(newFood);
-  } catch (error) {
-    throw new Error('Error in create food');
-  }
-});
+      const newFood = await Food.create({ ...food, image });
 
-router.put('/foods/:id', isAuthenticated, async (req, res) => {
-  try {
-    const id = Number(req.params.id);
-
-    const food = req.body;
-
-    const newFood = await Food.update(food, id);
-
-    if (newFood) {
       res.json(newFood);
-    } else {
-      res.status(400).json({ error: 'Food not found.' });
+    } catch (error) {
+      throw new Error('Error in create food');
     }
-  } catch (error) {
-    throw new Error('Error in update food');
   }
-});
+);
+
+router.put(
+  '/foods/:id',
+  isAuthenticated,
+  multer(uploadConfig).single('image'),
+  async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+
+      const food = req.body;
+
+      const image = req.file
+        ? `/imgs/foods/${req.file.filename}`
+        : '/imgs/foods/placeholder.jpg';
+
+      const newFood = await Food.update({ ...food, image }, id);
+
+      if (newFood) {
+        res.json(newFood);
+      } else {
+        res.status(400).json({ error: 'Food not found.' });
+      }
+    } catch (error) {
+      throw new Error('Error in update food');
+    }
+  }
+);
 
 router.delete('/foods/:id', isAuthenticated, async (req, res) => {
   try {
