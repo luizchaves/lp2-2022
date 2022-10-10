@@ -4,14 +4,27 @@
 ### Create Food
 
 POST {{host}}/foods
-Content-Type: application/json
 Authorization: bearer {{token}}
+Content-Type: multipart/form-data; boundary="boundary"
 
-{
-    "name": "Torta de Frango",
-    "price": 12.5,
-    "category_id": 3
-}
+--boundary
+Content-Disposition: form-data; name="name"
+
+Milkshake
+--boundary
+Content-Disposition: form-data; name="price"
+
+12.5
+--boundary
+Content-Disposition: form-data; name="category_id"
+
+2
+--boundary
+Content-Disposition: form-data; name="image"; filename="milkshake.jpg"
+Content-Type: image/jpeg
+
+< ./public/imgs/foods/milkshake.jpg
+--boundary--
 
 ### Read Foods
 
@@ -21,14 +34,27 @@ Authorization: bearer {{token}}
 ### Update Food
 
 PUT {{host}}/foods/3
-Content-Type: application/json
 Authorization: bearer {{token}}
+Content-Type: multipart/form-data; boundary="boundary"
 
-{
-    "name": "Torta de Frango",
-    "price": 14,
-    "category_id": 3
-}
+--boundary
+Content-Disposition: form-data; name="name"
+
+Milkshake
+--boundary
+Content-Disposition: form-data; name="price"
+
+12.5
+--boundary
+Content-Disposition: form-data; name="category_id"
+
+2
+--boundary
+Content-Disposition: form-data; name="image"; filename="milkshake.jpg"
+Content-Type: image/jpeg
+
+< ./public/imgs/foods/milkshake.jpg
+--boundary--
 
 ### Delete Food
 
@@ -46,8 +72,8 @@ POST {{host}}/users
 Content-Type: application/json
 
 {
-    "name": "Luiz Carlos",
-    "email": "luiz.carlos@email.com",
+    "name": "Luiz",
+    "email": "luiz@email.com",
     "password": "123"
 }
 

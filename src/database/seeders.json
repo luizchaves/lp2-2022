@@ -2,25 +2,27 @@
   "categories": [
     {
       "id": 1,
-      "name": "Salada"
+      "name": "Sobremesa"
     },
     {
       "id": 2,
-      "name": "Suco"
+      "name": "Bebida"
     },
     {
       "id": 3,
-      "name": "Salgado"
+      "name": "Lanche"
     }
   ],
   "foods": [
     {
-      "name": "Salada de Frutas",
+      "name": "Hambuguer",
+      "image": "/imgs/foods/hamburguer.jpg",
       "price": 12.5,
-      "category_id": 1
+      "category_id": 3
     },
     {
       "name": "Suco de Laranja",
+      "image": "/imgs/foods/suco-laranja.jpg",
       "price": 7,
       "category_id": 2
     }
