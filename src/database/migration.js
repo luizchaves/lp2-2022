@@ -30,7 +30,7 @@ async function up() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name VARCHAR(50) NOT NULL,
       email VARCHAR(50) NOT NULL UNIQUE,
-      password VARCHAR(20) NOT NULL
+      password VARCHAR(20) NOT NULL CHECK(LENGTH(password) >= 8)
     )
   `;
 

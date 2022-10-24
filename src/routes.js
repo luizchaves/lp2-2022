@@ -2,6 +2,7 @@ import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import multer from 'multer';
+import { celebrate, Joi, errors, Segments } from 'celebrate';
 
 import uploadConfig from './config/multer.js';
 import Category from './models/Category.js';
@@ -29,6 +30,13 @@ router.post(
   '/foods',
   isAuthenticated,
   multer(uploadConfig).single('image'),
+  celebrate({
+    [Segments.BODY]: Joi.object().keys({
+      name: Joi.string().required(),
+      price: Joi.number().precision(2),
+      category_id: Joi.number().integer(),
+    }),
+  }),
   async (req, res) => {
     try {
       const food = req.body;
@@ -50,6 +58,13 @@ router.put(
   '/foods/:id',
   isAuthenticated,
   multer(uploadConfig).single('image'),
+  celebrate({
+    [Segments.BODY]: Joi.object().keys({
+      name: Joi.string().required(),
+      price: Joi.number().precision(2),
+      category_id: Joi.number().integer(),
+    }),
+  }),
   async (req, res) => {
     try {
       const id = Number(req.params.id);
@@ -97,19 +112,30 @@ router.get('/categories', isAuthenticated, async (req, res) => {
   }
 });
 
-router.post('/users', async (req, res) => {
-  try {
-    const user = req.body;
+router.post(
+  '/users',
+  celebrate({
+    [Segments.BODY]: Joi.object().keys({
+      name: Joi.string().required(),
+      email: Joi.string().email(),
+      password: Joi.string().min(8),
+      confirmation_password: Joi.string().min(8),
+    }),
+  }),
+  async (req, res) => {
+    try {
+      const user = req.body;
 
-    const newUser = await User.create(user);
+      const newUser = await User.create(user);
 
-    await SendMail.createNewUser(user.email);
+      await SendMail.createNewUser(user.email);
 
-    res.json(newUser);
-  } catch (error) {
-    throw new Error('Error in create user');
+      res.json(newUser);
+    } catch (error) {
+      throw new Error('Error in create user');
+    }
   }
-});
+);
 
 router.post('/signin', async (req, res) => {
   try {
@@ -146,6 +172,8 @@ router.use(function (req, res, next) {
     message: 'Content not found',
   });
 });
+
+router.use(errors());
 
 router.use(function (error, req, res, next) {
   console.error(error.stack);
